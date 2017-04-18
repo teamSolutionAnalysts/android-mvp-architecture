@@ -1,0 +1,108 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.androidCompileSdkVersion
+    buildToolsVersion rootProject.ext.androidBuildToolsVersion
+
+    defaultConfig {
+        applicationId "com.sa.baseproject"
+        minSdkVersion rootProject.ext.androidMinSdkVersion
+        targetSdkVersion rootProject.ext.androidTargetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        resValue "string", "app_name", "BaseProject"
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    productFlavors {
+        stage {
+            applicationId "com.sa.baseproject.stage"
+            versionCode 3
+            versionName "1.0"
+        }
+        dev {
+            applicationId "com.sa.baseproject.dev"
+            versionCode 2
+            versionName "1.0"
+        }
+        prod {
+            applicationId "com.sa.baseproject"
+            versionCode 1
+            versionName "1.0"
+        }
+    }
+
+
+    signingConfigs {
+        release {
+            storeFile file("bproject.jks")
+            storePassword "sasasa"
+            keyAlias "bproject"
+            keyPassword "sasasa"
+        }
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+
+            applicationVariants.all { variant ->
+                renameAPK(variant)
+            }
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            applicationVariants.all { variant ->
+//                renameAPK(variant, defaultConfig, 'T')
+//            }
+        }
+    }
+
+
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+    compile "com.android.support:design:$supportLibraryVersion"
+    compile 'com.android.support.constraint:constraint-layout:1.0.0'
+    // Retrofit 2.0
+    compile "com.squareup.retrofit2:retrofit:$retrofitLibraryVersion"
+    compile "com.google.code.gson:gson:$gsonLibraryVersion"
+    compile "com.squareup.retrofit2:converter-gson:$retrofitLibraryVersion"
+    compile "com.squareup.retrofit2:adapter-rxjava:$retrofitLibraryVersion"
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile "com.squareup.okhttp3:okhttp:$okHttpLibraryVersion"
+    compile "com.squareup.okhttp3:logging-interceptor:$okHttpLibraryVersion"
+    //Picasso
+    compile "com.squareup.picasso:picasso:$picassoLibraryVersion"
+    compile "com.google.android.gms:play-services-location:$playserviceLibraryVersion"
+    testCompile 'junit:junit:4.12'
+}
+
+
+static def renameAPK(variant) {
+//    def outputPathName = "baseproject/"
+    variant.outputs.each { output ->
+        def formattedDate = new Date().format('dd-MM-YYYY')
+        def file = output.packageApplication.outputFile
+        def projectName = variant.mergedFlavor.resValues.get('app_name').getValue()
+        def projectVersionName = "_v" + variant.productFlavors.get(0).versionName
+        def projectBuildCode = "_b" + variant.productFlavors.get(0).versionCode
+        def buildDate = "_d" + formattedDate
+        def flavorsName = "_" + variant.productFlavors.get(0).name
+        def flavorsType = "_" + variant.variantData.variantConfiguration.buildType.name
+        def fileName = projectName + projectVersionName + projectBuildCode + buildDate + flavorsName + flavorsType + ".apk"
+//        outputPathName = outputPathName + fileName;
+//        output.packageApplication.outputFile = new File(outputPathName)
+        output.packageApplication.outputFile = new File(file.parent, fileName)
+    }
+}
