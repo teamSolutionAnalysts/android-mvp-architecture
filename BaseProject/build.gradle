@@ -28,15 +28,11 @@ ext {
     androidBuildToolsVersion = '25.0.2'
     androidMinSdkVersion = 16
     androidTargetSdkVersion = 25
-
     supportLibraryVersion = '25.1.1'
     retrofitLibraryVersion = '2.2.0'
     okHttpLibraryVersion = '3.6.0'
     gsonLibraryVersion = '2.7'
     picassoLibraryVersion = '2.5.2'
     playserviceLibraryVersion = '10.2.1'
-
-    appName = 'Test'
-    generatedbuild = 'generatedbuild'
 
 }
